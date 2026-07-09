@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+
+# Virtual environments
+venv/
+
+# Environment variables
+.env
+.env.*
+
+# IDEs
+.vscode/
+.idea/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log
+logs/
+
+# Datasets
+dataset/
+data_hf/
+saved_models/
+
+# Model checkpoints
+#*.pth
+
+# Training outputs
+outputs/
+runs/
+tensorboard/
+
+
+# Numpy / serialized data
+*.npy
+*.npz
+*.pkl
+
+# OS files
+.DS_Store
+Thumbs.db

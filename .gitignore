@@ -27,9 +27,7 @@ htmlcov/
 logs/
 
 # Datasets
-dataset/
-data_hf/
-saved_models/
+datasets/
 
 # Model checkpoints
 #*.pth

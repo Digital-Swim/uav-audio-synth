@@ -1,12 +1,26 @@
 # All scenario label variants supported by the generator
+from pathlib import Path
 from typing import List
 
 from src.config.data_classes import DroneConfig, EnvNoiseConfig, MicArrayConfig, OutdoorConfig, ScenarioConfig, SimConfig, TrajectoryConfig
 from src.sim.uav import AntiUAVAudioGenerator
-from src.config.sim_env import drones, env_noises, labels, mic_arrays, outdoors, sims, speeds, azimuths, duration_s
+from src.config.sim_env import drones, env_noises, labels, mic_arrays, outdoors, sims, speeds_test, speeds_train, azimuths_test, azimuths_train, duration_s, root_dir, speeds_val, azimuths_val, mode
 
 
 def build_scenarios():
+    
+    if mode == "train":
+        speeds = speeds_train
+        azimuths = azimuths_train
+    elif mode == "test":
+        speeds = speeds_test
+        azimuths = azimuths_test
+    elif mode == "validation":
+        speeds = speeds_val
+        azimuths = azimuths_val
+    else:
+        raise ValueError("Invalid configuration")
+      
     scenarios = []
     counter = 0
     for label in labels:
@@ -23,7 +37,7 @@ def build_scenarios():
                                     scenario = ScenarioConfig(
                                         name=f"scenario_{counter:03d}",
                                         label=label,
-                                        output_dir="datasets",
+                                        output_dir=Path(root_dir) / mode,
                                         duration_s=duration_s,
                                         array=MicArrayConfig(**mics),
                                         sim=SimConfig(**sim),
@@ -50,7 +64,6 @@ def run_batch(cfgs: List[ScenarioConfig]):
 # ─────────────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    scenarios = build_scenarios()
-    scenario = scenarios[0]
-    AntiUAVAudioGenerator(scenario).run()
+    scenarios = build_scenarios()    
+    run_batch(scenarios)
 

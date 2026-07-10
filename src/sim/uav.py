@@ -58,13 +58,10 @@ class AntiUAVAudioGenerator:
             positions, velocities, np.array(self.cfg.array.center)
         )
         
-
-        vis = VisualizeEnv(start=self.traj.start_pos, total_time_sec=self.cfg.duration_s, velocity=velocities, mics=self.traj.array)
-        vis.render()
-        
-        print("visual render completed")
-    
-        
+        #vis = VisualizeEnv(start=self.traj.start_pos, total_time_sec=self.cfg.duration_s, velocity=velocities, mics=self.traj.array)
+        #vis.render()
+        #print("visual render completed")
+            
         # ── 2. Drone source signal ───────────────────────────────────────────
         log.info("Step 2/4  Synthesising Doppler drone source …")
         source = self.drone_src.synthesise(positions, velocities)

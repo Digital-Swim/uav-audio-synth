@@ -13,6 +13,8 @@ A configurable Python framework for generating synthetic multichannel UAV (drone
 - Multiple microphone array geometries
 - Physically-inspired drone sound synthesis
 - Dynamic drone trajectories
+- Doppler effect synthesis
+- Visuals for data distributions
 - Environmental noise simulation
 - Multichannel WAV generation
 - Metadata generation for supervised learning

@@ -13,7 +13,7 @@ import numpy as np
 
 class VisualizeEnv:
     
-    def __init__(self, start, velocity , total_time_sec, mics, label = "",  audio_file=None, auto_close = False, rotate = False):     
+    def __init__(self, start, velocity , total_time_sec, mics, label = None,  audio_file=None, auto_close = False, rotate = False):     
         self.start = start
         self.velocity = velocity
         self.total_time_sec = total_time_sec
@@ -26,18 +26,20 @@ class VisualizeEnv:
         self.audio_data = None
         self.audio_sr = None
         self.rotate = rotate
-        self.fig.text(
-            0.02, 0.98,
-            label,
-            va='top',
-            ha='left',
-            fontsize=12
-        )
+        self.label = self._format_info(label)
         if self.audio_file:
             self.audio_data, self.audio_sr = sf.read(self.audio_file)
             if  self.audio_data.ndim == 2:
                  self.audio_data = np.mean( self.audio_data, axis=1)
+    
+    
+    def _format_info(self, info):
         
+        if info is None:
+            return None
+        
+        return "\n".join(f"{k:<12}: {v}" for k, v in info.items())
+
     def _generate_1ms_trajectory(self):
         """
         Generates a 3D trajectory array sampled at exactly 1-millisecond intervals.
@@ -70,7 +72,24 @@ class VisualizeEnv:
 
     def render(self):
         
-        
+        if self.label is not None:
+            self.fig.text(
+                0.01,          # x position
+                0.99,          # y position
+                self.label,
+                ha="left",
+                va="top",
+                fontsize=8,
+                family="monospace",
+                bbox=dict(
+                    facecolor="white",
+                    edgecolor="gray",
+                    alpha=0.8,
+                    boxstyle="round"
+                )
+            )
+            #self.fig.subplots_adjust(left=0.28)
+            
         # Render persistent background paths
         self.ax.plot(
             self.trajectory[:, 0], self.trajectory[:, 1], self.trajectory[:, 2],

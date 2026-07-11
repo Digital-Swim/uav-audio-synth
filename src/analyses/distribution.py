@@ -36,6 +36,9 @@ class DataDistAnalyzer():
                             os.path.join(folder_path, '**', '*.json'),
                             recursive=True)
             self.metadata_files = metadata_files
+            
+            if len(self.metadata_files) == 0:
+                print("Metadata files not found")
                                     
    
     def show_distribution(self, values):
@@ -45,17 +48,16 @@ class DataDistAnalyzer():
         
         return distribution
     
-    def plot_distribution(self, values, title="Distribution", label="Values"):
-
+    def plot_distribution(self, values, title="Distribution", label="Values", kde_samples_count = 20000):
         s = pd.Series(values)
-
+        kde_samples = min(kde_samples_count, len(s))
         print(f"Number of samples: {len(s)}")
         print(f"distribution of {label}:")
         print(s.describe().round(2))
         print("Skewness:", s.skew())
         plt.figure(figsize=(8,5))
         s.plot(kind="hist", bins=40, density=True, alpha=0.5)
-        s.plot(kind="kde")
+        s.sample(kde_samples).plot(kind="kde")
         plt.xlabel(label)
         plt.title(title)
         plt.grid(True)
@@ -72,3 +74,10 @@ class DataDistAnalyzer():
     def show_elevation_distribution(self):
         values = self.load_samples_field("elevation_deg")
         self.plot_distribution(values, title="Elevation Distribution", label="Elevation (deg)")
+        
+    def show_velocity_distribution(self):
+        values = self.load_samples_field("velocity_ms")
+        velocities = np.array(values)
+        v = np.linalg.norm(velocities, axis=1)
+        self.plot_distribution(v, title="Velocity Distribution", label="Velocities")
+    

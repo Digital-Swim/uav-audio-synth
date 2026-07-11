@@ -38,6 +38,44 @@ class AntiUAVAudioGenerator:
         )
         self.writer   = DatasetWriter(cfg)
 
+
+    def plot_trajectory(self):
+        log.info("=" * 64)
+        log.info(f"Scenario : {self.cfg.name}  label={self.cfg.label}")
+        log.info(f"Mic mode : {self.cfg.array.mic_mode}")
+        log.info(f"Duration : {self.cfg.duration_s} s")
+        log.info("=" * 64)
+
+        fs  = self.cfg.sim.fs
+        N   = int(self.cfg.duration_s * fs)
+        dt  = 1.0 / fs
+
+        # ── 1. Trajectory ────────────────────────────────────────────────────
+        log.info("Step 1/4  Generating trajectory …")
+        positions  = self.traj.build(N)              # (N, 3)
+        velocities = TrajectoryFactory.velocity(positions, dt)  # (N, 3)       
+        diffs = np.diff(positions, axis=0)
+        total_distance = np.sum(np.linalg.norm(diffs, axis=1))
+        info = {
+            "Scenario": self.cfg.name,
+            "Label": self.cfg.label,
+            "Mic mode": self.cfg.array.mic_mode,
+            "Mic Position":self.traj.array,
+            "Duration": f"{self.cfg.duration_s:.1f} s",
+            "Fs": f"{self.cfg.sim.fs} Hz",
+            "Samples": N,
+            "Start": np.round(self.traj.start_pos, 2),
+            "Speed": self.cfg.trajectory.speed,
+            "Azimuth": str(round(self.cfg.trajectory.azimuth,2)) + " Deg",
+            "Start elevation": TrajectoryFactory.calculate_elevation_deg(self.traj.array, self.traj.start_pos),
+            "End elevation": TrajectoryFactory.calculate_elevation_deg(self.traj.array, self.traj.end_pos),
+            "Net Distance": np.linalg.norm(self.traj.end_pos - self.traj.start_pos).round(2),
+            "Total Distance":round(total_distance,2)
+        }   
+        
+        vis = VisualizeEnv(start=self.traj.start_pos, total_time_sec=self.cfg.duration_s, velocity=velocities, mics=self.traj.array, label=info)
+        vis.render()
+    
     def run(self):
         t0 = time.perf_counter()
         log.info("=" * 64)
@@ -60,6 +98,7 @@ class AntiUAVAudioGenerator:
         
         #vis = VisualizeEnv(start=self.traj.start_pos, total_time_sec=self.cfg.duration_s, velocity=velocities, mics=self.traj.array)
         #vis.render()
+        
         #print("visual render completed")
             
         # ── 2. Drone source signal ───────────────────────────────────────────

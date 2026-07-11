@@ -4,6 +4,9 @@ A configurable Python framework for generating synthetic multichannel UAV (drone
 
 ---
 
+## Test Audio Sepctogram 
+![Audio Spectorgram](images/spectogram.png)
+
 # Features
 
 - Configurable outdoor acoustic environments
@@ -314,19 +317,91 @@ dataset/
 
 ```json
 {
-    "trajectory": "approaching",
-
-    "speed_mps": 4,
-
-    "distance_m": 112.5,
-
-    "azimuth_deg": 30,
-
-    "elevation_deg": 18,
-
-    "radial_speed_mps": -4,
-
-    "timestamp": 12.35
+  "scenario": "scenario_000",
+  "label": "approaching",
+  "duration_s": 30.0,
+  "mic_mode": "omnidirectional",
+  "cardioid_p": null,
+  "audio": {
+    "sample_rate_hz": 16000,
+    "n_channels": 8,
+    "array_center_m": [
+      150.0,
+      150.0,
+      10.0
+    ],
+    "array_radius_m": 0.05
+  },
+  "outdoor_env": {
+    "dimensions_m": [
+      1000.0,
+      1000.0,
+      1000.0
+    ],
+    "wall_material": "wood_1.6cm",
+    "ground_material": "linoleum_on_concrete",
+    "sky_material": "anechoic",
+    "max_rir_order": 2
+  },
+  "samples": [
+    {
+      "sample_idx": 0,
+      "time_s": 0.0,
+      "position_m": [
+        241.127,
+        150.0,
+        78.497
+      ],
+      "velocity_ms": [
+        -1.79,
+        0.0,
+        -3.221
+      ],
+      "distance_m": 114.0,
+      "radial_speed_ms": -3.3663,
+      "motion": "approaching",
+      "azimuth_deg": 0.0,
+      "elevation_deg": 36.93,
+      "tdoa_us": [
+        0.0,
+        34.139,
+        116.545,
+        198.93,
+        233.049,
+        198.93,
+        116.545,
+        34.139
+      ]
+    },
+    {
+      "sample_idx": 160,
+      "time_s": 0.01,
+      "position_m": [
+        241.109,
+        150.0,
+        78.465
+      ],
+      "velocity_ms": [
+        -1.791,
+        0.0,
+        -3.22
+      ],
+      "distance_m": 113.966,
+      "radial_speed_ms": -3.3663,
+      "motion": "approaching",
+      "azimuth_deg": 0.0,
+      "elevation_deg": 36.92,
+      "tdoa_us": [
+        0.0,
+        34.143,
+        116.557,
+        198.95,
+        233.072,
+        198.95,
+        116.557,
+        34.143
+      ]
+    }]
 }
 ```
 
@@ -389,10 +464,59 @@ Possible future additions include
 - Dataset balancing utilities
 
 ---
+## Usage Guide
+
+This tool uses nested commands (subparsers) to separate actions. The two primary modes are `run` and `plot`.
+
+### 1. Generate Audio Data
+To execute the audio generation batch process, run:
+
+```bash
+python main.py run
+```
+
+### 2. Plotting Visualizations
+
+The plot command requires an additional sub-command specifying what type of plot you want to generate.
+
+### Option A: Spatial Trajectories
+Plots the directional path of a specific scenario ID.
+
+```bash
+python main.py plot trajectory [--scenario SCENARIO_ID]
+
+python main.py plot trajectory --scenario 0
+```
+
+Flags:
+
+--scenario: (Optional, Default: 0) The integer ID of the scenario. The system automatically pads this to a 4-digit string (e.g., --scenario 5 looks for 0005).
+
+![Drone Trajectory Simulation](images/traj.png)
+
+### Option B: Data Distributions
+Plots the frequency distribution of a chosen metric across the dataset.
+```bash
+python main.py plot distribution [--feature FEATURE_NAME]
+
+python main.py plot distribution --feature velocity
+```
+Flags:
+--feature: (Optional) The specific metric to plot.
+Allowed Choices: velocity, azimuth, distance, elevation
+
+![Data Distribution ](images/dist.png)
+
+| Command | Sub-command | Flags | Description |
+|---|---|---|---|
+| `run` | — | — | Launches the audio data generation sequence. |
+| `plot` | `trajectory` | `--scenario <int>` | Visualizes spatial paths for a given scenario number. |
+| `plot` | `distribution` | `--feature <name>` | Graphs distributions for velocity, azimuth, distance, or elevation. |
+
+
 
 # License
-
-Specify your preferred license (MIT, Apache 2.0, GPL, etc.).
+MIT
 
 ---
 

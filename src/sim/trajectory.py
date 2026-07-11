@@ -140,7 +140,27 @@ class TrajectoryFactory:
         unit  = delta / dist
         return np.sum(velocities * unit, axis=1)
 
-
+    @staticmethod
+    def calculate_elevation_deg(center, target):
+        """
+        Calculates the elevation angle in degrees from a center observer to a target point.
+        Assumes array format: [x, y, z] where z is height.
+        """
+        # 1. Get the relative vector pointing from center to target
+        relative_vec = target - center
+        x, y, z = relative_vec[0], relative_vec[1], relative_vec[2]
+        
+        # 2. Calculate the horizontal ground distance (hypotenuse of X and Y)
+        ground_dist = np.sqrt(x**2 + y**2)
+        
+        # 3. Calculate the angle in radians, then convert to degrees
+        # np.arctan2(y, x) handles signs safely and avoids division-by-zero errors
+        elevation_rad = np.arctan2(z, ground_dist)
+        elevation_deg = np.degrees(elevation_rad)
+        
+        return round(float(elevation_deg),2)
+    
+    
 def test_scenario(cfg:ScenarioConfig):
     
     log.info("=" * 64)
